@@ -36,25 +36,43 @@ class PortScanner(object):
                 self.ret.append(self.host+":"+port)
                 logger.info("Found "+self.host+":"+port)
 
-def assign(scanners,loop):
-    tasks = []  # todo 控制一下速度 太快会崩
-    for scanner in scanners:
-        tasks.append(asyncio.ensure_future(scanner.run()))
-    for task in tasks:
-        loop.run_until_complete(task)
+# def assign(scanners,loop):
+#     tasks = []  # todo 控制一下速度 太快会崩
+#     for scanner in scanners:
+#         tasks.append(asyncio.ensure_future(scanner.run()))
+#     for task in tasks:
+#         loop.run_until_complete(task)
+#
+# def port_scan(subdomains, ports=None):
+#     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+#     loop = asyncio.get_event_loop()
+#     loop.set_debug(True)
+#     scanners = [PortScanner(subdomain,ports,loop) for subdomain in subdomains]
+#     step = 30
+#     start = step
+#     tmp = scanners[0:step]
+#     while tmp:
+#         assign(tmp,loop)
+#         tmp = scanners[start:start+step]
+#         start += step
+#     loop.close()
+#     ret = []
+#     for scanner in scanners:
+#         if len(scanner.ret) > 0:
+#             ret.extend(scanner.ret)
+#     return ret
+
 
 def port_scan(subdomains, ports=None):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.get_event_loop()
     loop.set_debug(True)
     scanners = [PortScanner(subdomain,ports,loop) for subdomain in subdomains]
-    step = 30
-    start = step
-    tmp = scanners[0:step]
-    while tmp:
-        assign(tmp,loop)
-        tmp = scanners[start:start+step]
-        start += step
+    tasks = []  # todo 控制一下速度 太快会崩
+    for scanner in scanners:
+        tasks.append(asyncio.ensure_future(scanner.run()))
+    for task in tasks:
+        loop.run_until_complete(task)
     loop.close()
     ret = []
     for scanner in scanners:
