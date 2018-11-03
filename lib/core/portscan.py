@@ -22,7 +22,7 @@ class PortScanner(object):
     async def socket(host, port, loop):
         conn = asyncio.open_connection(host, int(port), loop=loop)
         try:
-            await asyncio.wait_for(conn, timeout=2)
+            reader, writer = await asyncio.wait_for(conn, timeout=2)
             return True
         except:
             return False
