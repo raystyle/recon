@@ -38,7 +38,7 @@ class PortScanner(object):
     async def socket(host, port, loop):
         conn = asyncio.open_connection(host, int(port), loop=loop)
         try:
-            reader, writer = await asyncio.wait_for(conn, timeout=2)
+            reader, writer = await asyncio.wait_for(conn, timeout=0.5)
             return True
         except:
             return False
@@ -51,6 +51,7 @@ class PortScanner(object):
             if flag:
                 self.ret.append(self.host+":"+str(port))
                 logger.info("Found "+self.host+":"+str(port))
+        logger.info("Check host: " + self.host + " ports done")
 
 def port_scan(subdomains, ports=None):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
