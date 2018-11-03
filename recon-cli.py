@@ -26,7 +26,7 @@ engines = {
     'chinaz': ChinazEngine,
 }
 
-def run(target, output):
+def run(target, output, ports):
     used_engine = [_(target) for _ in engines.values()]
     loop = asyncio.get_event_loop()
     loop.set_debug(True)
@@ -41,10 +41,11 @@ def run(target, output):
     for engine in used_engine:
         ret.update(engine.subdomains)
     # port check
-    ret = port_scan(list(ret))
-    with open(output,"w") as f:
+    ret = port_scan(list(ret),ports)
+    with open(output,"a+") as f:
         ret = "\n".join(ret)
         f.write(ret)
+        f.write('\n')
 
 if __name__ == '__main__':
 
@@ -53,9 +54,10 @@ if __name__ == '__main__':
     args = cmdLineParse()
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     if type(args.url) is list:
+        logger.info("check "+str(len(args.url))+" urls")
         for url in args.url:
-            run(url,args.output)
+            run(url,args.output, args.ports)
     else:
-        run(args.url, args.output)
+        run(args.url, args.output, args.ports)
 
 

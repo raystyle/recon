@@ -22,6 +22,10 @@ def cmdLineParse():
     cli.add_argument('-o', '--output',
                      dest="output",
                      help="setup output file path")
+    cli.add_argument('-p', '--ports',
+                     default="small",
+                     dest="ports",
+                     help="setup ports (small or large)")
 
     args=parser.parse_args()
     if args.url:
