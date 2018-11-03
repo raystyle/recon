@@ -10,6 +10,8 @@
 from lib.modules.passive.domain import *
 from lib.core.common import banner
 from lib.core.data import logger
+from lib.core.portscan import port_scan
+from lib.core.commandline import cmdLineParse
 engines = {
     'baidu': BaiduEngine,
     'ask': AskEngine,
@@ -24,7 +26,7 @@ engines = {
     'chinaz': ChinazEngine,
 }
 
-def run(target):
+def run(target, output):
     used_engine = [_(target) for _ in engines.values()]
     loop = asyncio.get_event_loop()
     loop.set_debug(True)
@@ -38,17 +40,22 @@ def run(target):
     ret = set()
     for engine in used_engine:
         ret.update(engine.subdomains)
-    print(ret)
-    print(len(ret))
+    # port check
+    ret = port_scan(list(ret))
+    with open(output,"w") as f:
+        ret = "\n".join(ret)
+        f.write(ret)
+
 if __name__ == '__main__':
 
-    import uvloop,asyncio,sys
+    import uvloop,asyncio
     banner()
-    args = sys.argv
-    if len(args)!=2:
-        logger.error("use python3 recon-cli.py domain")
+    args = cmdLineParse()
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    if type(args.url) is list:
+        for url in args.url:
+            run(url,args.output)
     else:
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-        run(args[1])
+        run(args.url, args.output)
 
 
