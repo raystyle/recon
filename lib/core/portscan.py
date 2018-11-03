@@ -44,13 +44,13 @@ class PortScanner(object):
             return False
 
     async def run(self):
-        logger.info("Check host: " + self.host + " ports: " + self.ports)
-        self.ports = self.ports.split(",")
+        logger.info("Check host: " + self.host + " ports")
+        # self.ports = self.ports.split(",")
         for port in self.ports:
             flag = await PortScanner.socket(self.host, port, self.loop)
             if flag:
-                self.ret.append(self.host+":"+port)
-                logger.info("Found "+self.host+":"+port)
+                self.ret.append(self.host+":"+str(port))
+                logger.info("Found "+self.host+":"+str(port))
 
 def port_scan(subdomains, ports=None):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
