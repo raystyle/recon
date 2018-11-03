@@ -10,6 +10,7 @@
 from lib.core.data import logger
 import asyncio,uvloop
 import aiodns,socket
+import time
 
 class PortScanner(object):
 
@@ -90,8 +91,16 @@ def port_scan(subdomains, ports=None):
     tasks = []
     for scanner in scanners:
         tasks.append(asyncio.ensure_future(scanner.run()))
+    t = 1
     for task in tasks:
         loop.run_until_complete(task)
+        if t == 20:
+            logger.info("sleep for a while")
+            time.sleep(5)
+            t=1
+        else:
+            t+=1
+
     loop.close()
     ret = []
     for scanner in scanners:
